@@ -1,3 +1,3 @@
 # to_do_list
-# Installation
+## Installation
 run `flutter pub get`

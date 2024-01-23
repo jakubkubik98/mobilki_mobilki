@@ -21,7 +21,7 @@ class ToDoListItem extends StatelessWidget {
           children: [
             // Show ToDo content with custom methods
             _nameRow(context),
-            // SizedBox here used to add some space betweet name and description
+            // SizedBox here used to add some space between name and description
             SizedBox(height: 8),
             _descriptionRow(context),
           ],

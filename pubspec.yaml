@@ -10,3 +10,5 @@ dependencies:
     sdk: flutter
   sqflite:
     version: 2.3.0
+  intl:
+    version: 0.19.0

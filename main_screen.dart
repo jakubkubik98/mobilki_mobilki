@@ -41,7 +41,11 @@ class _MainScreenState extends State<MainScreen> {
         // Builder uses context and index of element in list to create a new
         // widget for each item in list
         itemBuilder: (context, index) {
-          return ToDoListItem(toDo: _todos[index]);
+          return ToDoListItem(
+            toDo: _todos[index],
+            onPressed: {
+                  },
+            );
         },
       ),
     );

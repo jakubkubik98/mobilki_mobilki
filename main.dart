@@ -24,14 +24,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: FutureBuilder(
-          future: database.rawQuery("SELECT * FROM toDoList"),
-          builder: (context, snapshot) {
-            return Center(child: Text(snapshot.toString()));
-          },
-        ),
-      ),
+      home: InitialScreen(),
     );
   }
 }

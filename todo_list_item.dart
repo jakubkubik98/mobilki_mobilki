@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'todo.dart';
 
 class ToDoListItem extends StatelessWidget {
   ToDoListItem({
     required this.toDo,
+    onPressed
   });
 
   // Variable used to store todo that this widget will show
@@ -24,6 +26,7 @@ class ToDoListItem extends StatelessWidget {
             // SizedBox here used to add some space between name and description
             SizedBox(height: 8),
             _descriptionRow(context),
+            _createdRow(context),
           ],
         ),
       ),
@@ -31,16 +34,39 @@ class ToDoListItem extends StatelessWidget {
   }
 
   Widget _nameRow(BuildContext context) {
-    return Text(
+    if (toDo.isDone == false)
+    {
+      return Text(
       toDo.name,
       style: Theme.of(context).textTheme.headlineSmall,
     );
+    }
+    else {
+      return Text(
+      toDo.name,
+      style: Theme.of(context).textTheme.headlineSmall?.merge(TextStyle(decoration: TextDecoration.lineThrough),));
+    }
+    
   }
 
   Widget _descriptionRow(BuildContext context) {
-    return Text(
+    int maxLenght = 10;
+    if (toDo.description.length > maxLenght) {
+      String trimmedDesc = toDo.description.replaceRange(maxLenght+1, null, "...");
+      return Text(
+      trimmedDesc,
+      style: Theme.of(context).textTheme.bodyMedium,
+    );}
+    else
+    {
+      return Text(
       toDo.description,
       style: Theme.of(context).textTheme.bodyMedium,
-    );
+    );}
+  }
+
+  Widget _createdRow(BuildContext context) {
+    var formattedDate = DateFormat("EEE, d MMM yyyy 'at' HH:mm").format(DateTime.fromMillisecondsSinceEpoch(toDo.createdAt));
+    return Text("Created at: "+formattedDate, style: Theme.of(context).textTheme.bodySmall,);
   }
 }

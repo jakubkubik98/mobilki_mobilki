@@ -51,7 +51,6 @@ class _InitialScreenState extends State<InitialScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Initial Screen"),
       ),
       body: Column(
         children: [

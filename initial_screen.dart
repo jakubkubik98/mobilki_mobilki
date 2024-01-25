@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'main_screen.dart';
+import 'todo_repository.dart';
 
 class InitialScreen extends StatefulWidget {
-  InitialScreen({super.key});
+  final ToDoRepository todoRepository;
+  InitialScreen({Key? key, required this.todoRepository}) :super (key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -34,14 +37,15 @@ class _InitialScreenState extends State<InitialScreen> {
 
   // Method called when save button is clicked
   // BuildContext is required to use navigator
-  void _onSaveButtonClick(BuildContext context) {
+  void _onSaveButtonClick(BuildContext context) async {
+    
     // Use the navigator to push new screen
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) {
           // Create an instance of new screen and
           // pass user input to main screen
-          return MainScreen(username: _textInput);
+          return MainScreen(todoRepository: widget.todoRepository, username: "",);
         },
       ),
     );

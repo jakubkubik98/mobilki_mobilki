@@ -9,6 +9,6 @@ dependencies:
   flutter_test:
     sdk: flutter
   sqflite:
-    version: 2.3.0
+    version: ">=2.3.0"
   intl:
-    version: 0.19.0
+    version: ">=0.19.0"

@@ -1,15 +1,15 @@
 class ToDo {
+  late int id;
+  late String name;
+  late String description;
+  late int createdAt;
+  late bool isDone;
 
-  ToDo({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.createdAt,
-    required this.isDone,
-  });
-  final int id;
-  final String name;
-  final String description;
-  final int createdAt;
-  final bool isDone;
+  ToDo.fromMap(Map<String, dynamic> map) {
+    id = map['id'];
+    name = map['name'];
+    description = map['desc'];
+    createdAt = map['createdAt'];
+    isDone = map['isDone'] == 1;
+  }
 }

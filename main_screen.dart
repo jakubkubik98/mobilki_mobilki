@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'todo.dart';
 import 'todo_list_item.dart';
 import 'todo_repository.dart';
+import 'add_task_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final ToDoRepository todoRepository;
   final String username;
 
   MainScreen({required this.todoRepository, required this.username});
-
-  // Variable used to store username passed from initial screen
 
   @override
   State<StatefulWidget> createState() {
@@ -23,7 +22,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // Read all entries from repository here
     _loadToDos();
   }
 
@@ -35,50 +33,66 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('To-Do List'),
-      ),
-      body: FutureBuilder<List<ToDo>>(
-        future: widget.todoRepository.getAllToDos(),  // Use widget.todoRepository here
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            List<ToDo> todos = snapshot.data ?? [];
-            return ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(todos[index].name),
-                );
-              },
-            );
-          }
-        },
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('To-Do List'),
+      actions: [
+        DropdownButton<String>(
+          icon: Icon(Icons.more_vert),
+          onChanged: (String? value) {
+            if (value == 'add') {
+              _handleAddTask(context);
+            } else if (value == 'deleteAll') {
+              _handleDeleteAllTasks();
+            }
+          },
+          items: [
+            DropdownMenuItem<String>(
+              value: 'add',
+              child: Text('Add New Task'),
+            ),
+            DropdownMenuItem<String>(
+              value: 'deleteAll',
+              child: Text('Delete All Tasks'),
+            ),
+          ],
+        ),
+      ],
+    ),
+    body: ListView.builder(
+      itemCount: _todos.length,
+      itemBuilder: (context, index) {
+        return ToDoListItem(toDo: _todos[index]);
+      },
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        _handleAddTask(context);
+      },
+      child: Icon(Icons.add),
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+  );
+}
+
+
+  void _handleAddTask(BuildContext context) async {
+    // Await the result when navigating to AddTaskScreen
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddTaskScreen(todoRepository: widget.todoRepository),
       ),
     );
+
+    // Check if a new task was added
+    if (result == true) {
+      _loadToDos(); // Reload tasks from the database and update the UI
+    }
+  }
+
+  void _handleDeleteAllTasks() {
+    widget.todoRepository.deleteAllToDo();
+    _loadToDos();
   }
 }
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     // Use the username provided to widget from state
-    //     title: Text("Hello, ${widget.username}"),
-    //   ),
-    //   body: ListView.builder(
-    //     // Number of items for the list to use
-    //     itemCount: _todos.length,
-    //     // Builder uses context and index of element in list to create a new
-    //     // widget for each item in list
-    //     itemBuilder: (context, index) {
-    //       return ToDoListItem(
-    //         toDo: _todos[index],
-    //         onPressed: {
-    //               },
-    //         );
-    //     },
-    //   ),
-    // );

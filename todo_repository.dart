@@ -1,17 +1,25 @@
+import 'package:sqflite/sqflite.dart';
+
 import 'todo.dart';
 
 class ToDoRepository {
+  late Database database;
+
+  ToDoRepository({required this.database});
   // Returns a sample list of ToDos
-  static List<ToDo> getAllToDos() {
-    // List<ToDo> list = database.rawQuery('SELECT * FROM toDoList');
-    // return list;
+  Future<List<ToDo>> getAllToDos() async {
+    List<Map<String, dynamic>> results = await database.rawQuery('SELECT * FROM toDoList');
+    List<ToDo> todos = results.map((result) => ToDo.fromMap(result)).toList();
     
-    // Connection to database should be done here, but we return
-    // a sample list instead
-    return [
-      ToDo(id:1, name: "Nazwe 1", description: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", createdAt: 1706131694000, isDone: false),
-      ToDo(id:2, name: "Nazwa 2", description: "Opis 2", createdAt: 1706131419000, isDone: true),
-      ToDo(id:3, name: "Nazwa 3", description: "Opis 3", createdAt: 1706131419000, isDone: false),
-    ];
+    return todos;
+  }
+
+  Future<void> addNewToDo(ToDo newToDo) async {
+    Map<String, dynamic> toDoMap = newToDo.toMap();
+    await database.insert('toDoList', toDoMap);
+  }
+
+  Future<void> deleteAllToDo() async {
+    await database.rawDelete('DELETE FROM toDoList');
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'taskDetailScreen.dart';
 import 'todo.dart';
 
 class ToDoListItem extends StatelessWidget {
@@ -13,8 +14,17 @@ class ToDoListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the TaskDetailScreen when the task is tapped
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TaskDetailScreen(toDo: toDo),
+          ),
+        );
+      },
     // Card makes the element in list look nicer
-    return Card(
+    child: Card(
       child: Padding(
         // Padding to add margins to all card children
         padding: EdgeInsets.all(16),
@@ -30,11 +40,11 @@ class ToDoListItem extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _nameRow(BuildContext context) {
-    if (toDo.isDone == false)
+    if (toDo.isDone == 0)
     {
       return Text(
       toDo.name,

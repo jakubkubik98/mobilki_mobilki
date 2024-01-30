@@ -6,11 +6,11 @@ import 'todo.dart';
 class ToDoListItem extends StatelessWidget {
   ToDoListItem({
     required this.toDo,
-    onPressed
-  });
+    VoidCallback? onLongPress,
+  }) : _onLongPress = onLongPress;
 
-  // Variable used to store todo that this widget will show
   final ToDo toDo;
+  final VoidCallback? _onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -23,24 +23,22 @@ class ToDoListItem extends StatelessWidget {
           ),
         );
       },
-    // Card makes the element in list look nicer
-    child: Card(
-      child: Padding(
-        // Padding to add margins to all card children
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Show ToDo content with custom methods
-            _nameRow(context),
-            // SizedBox here used to add some space between name and description
-            SizedBox(height: 8),
-            _descriptionRow(context),
-            _createdRow(context),
-          ],
+      onLongPress: _onLongPress,
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _nameRow(context),
+              SizedBox(height: 8),
+              _descriptionRow(context),
+              _createdRow(context),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _nameRow(BuildContext context) {

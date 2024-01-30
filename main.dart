@@ -14,10 +14,9 @@ Future<void> main() async {
     path, 
     version: 1,
     onCreate: (database, version) async {
-      await database.execute('CREATE TABLE toDoList (id INTEGER PRIMARY KEY, name VARCHAR(255), desc VARCHAR(255), createdAt INTEGER, isDone INTEGER)');
-      await database.execute("INSERT INTO toDoList VALUES (1, 'Testname1', 'TestDesc', '1234', '1' )");
-      await database.execute("INSERT INTO toDoList VALUES (2, 'Testname2', 'TestDesc', '1234', '0' )");
-      await database.execute("INSERT INTO toDoList VALUES (3, 'Testname3', 'TestDesc', '1234', '1' )");
+      var currentTime = DateTime.now().millisecondsSinceEpoch.toString();
+      await database.execute('CREATE TABLE toDoList (id INTEGER PRIMARY KEY AUTOINCEMENT, name VARCHAR(255), desc VARCHAR(255), createdAt INTEGER, isDone INTEGER)');
+      await database.execute("INSERT INTO toDoList VALUES (1, 'Example Task', 'Example Description', '$currentTime', '1' )");
     });
   ToDoRepository todoRepository = ToDoRepository(database: database);
   runApp(

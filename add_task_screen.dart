@@ -16,6 +16,19 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _titleController = TextEditingController();
+  bool _isButtonEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.addListener(_updateButtonState);
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      _isButtonEnabled = _titleController.text.trim().isNotEmpty;
+    });
+  }
 
   @override
   void dispose() {
@@ -34,6 +47,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
     // The toMap method will not include the ID, createdAt, and isDone,
     // allowing SQLite to assign them automatically or use defaults
+    _titleController.clear();
+    _descriptionController.clear();
     Map<String, dynamic> toDoMap = newToDo.toMap();
     await widget.todoRepository.addNewToDo(newToDo); // Insert the new task into the database
     Navigator.of(context).pop(true); // Close the screen
@@ -62,7 +77,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {_saveTask();},
+              onPressed: _isButtonEnabled ? () => _saveTask() : null,
               child: Text('Save Task'),
             ),
           ],

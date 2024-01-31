@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'main_screen.dart';
 import 'todo_repository.dart';
 
 class InitialScreen extends StatefulWidget {
   final ToDoRepository todoRepository;
-  InitialScreen({Key? key, required this.todoRepository}) :super (key: key);
+
+  InitialScreen({Key? key, required this.todoRepository}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -14,71 +15,78 @@ class InitialScreen extends StatefulWidget {
 }
 
 class _InitialScreenState extends State<InitialScreen> {
-  // Variable stores user input from text field
   String _textInput = "";
-  // Variable used to store error information, it it's not null then an
-  // error is set, otherwise validation is correct
-  String? _error = null;
+  bool _isValid = false;
+  late SharedPreferences _prefs;
 
-  // Method called every time when text is changed
+  @override
+  void initState() {
+    super.initState();
+    _initializePrefs(); // Call _initializePrefs in initState
+  }
+
+  // Initialize _prefs asynchronously
+  void _initializePrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    _loadSavedUsername();
+  }
+
+  void _loadSavedUsername() {
+    String? savedUsername = _prefs.getString('username');
+
+    if (savedUsername != null && savedUsername.length >= 3) {
+      // If a valid username is already saved, navigate to the main screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) {
+            return MainScreen(todoRepository: widget.todoRepository, username: savedUsername);
+          },
+        ),
+      );
+    }
+  }
+
   void _onTextChanged(String newText) {
     setState(() {
-      // Set our variable to store new text
       _textInput = newText;
-      // If text length is less than 3 characters, set the error message
-      // otherwise, set null to remove the error
-      if (_textInput.length < 3) {
-        _error = "Name must be at least 3 characters long";
-      } else {
-        _error = null;
-      }
+      _isValid = newText.length >= 3;
     });
   }
 
-  // Method called when save button is clicked
-  // BuildContext is required to use navigator
   void _onSaveButtonClick(BuildContext context) async {
-    
-    // Use the navigator to push new screen
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) {
-          // Create an instance of new screen and
-          // pass user input to main screen
-          return MainScreen(todoRepository: widget.todoRepository, username: "",);
-        },
-      ),
-    );
+    if (_isValid) {
+      // Save the username to shared preferences
+      _prefs.setString('username', _textInput);
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) {
+            return MainScreen(todoRepository: widget.todoRepository, username: _textInput);
+          },
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: Column(
         children: [
-          // Padding used to add margin on all sides of textfield
           Padding(
             padding: EdgeInsets.all(16),
             child: TextField(
-              // Use our method here to update text input
               onChanged: _onTextChanged,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Please input your name",
-                errorText: _error,
+                errorText: _isValid ? null : "Name must be at least 3 characters long",
               ),
             ),
           ),
           OutlinedButton(
-            // When error is not null, we pass null as onPressed to make the
-            // button disabled. Otherwise, call our method
-            onPressed: (_error != null)
-                ? null
-                : () {
-                    _onSaveButtonClick(context);
-                  },
+            onPressed: _isValid ? () => _onSaveButtonClick(context) : null,
             child: Text("Save"),
           )
         ],

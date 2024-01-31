@@ -43,4 +43,19 @@ class ToDo {
 
     return map;
   }
+   ToDo copyWith({
+    String? name,
+    String? description,
+    int? createdAt,
+    int? isDone,
+    // Add other fields as needed
+  }) {
+    return ToDo(
+      name: name ?? this.name,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      isDone: isDone ?? this.isDone,
+      // Copy other fields
+    );
+  }
 }

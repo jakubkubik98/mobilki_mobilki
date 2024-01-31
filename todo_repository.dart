@@ -8,10 +8,11 @@ class ToDoRepository {
   ToDoRepository({required this.database});
   // Returns a sample list of ToDos
   Future<List<ToDo>> getAllToDos() async {
-    List<Map<String, dynamic>> results = await database.rawQuery('SELECT * FROM toDoList ORDER BY createdAt DESC');
+    List<Map<String, dynamic>> results = await database
+        .rawQuery('SELECT * FROM toDoList ORDER BY createdAt DESC');
     print(results);
     List<ToDo> todos = results.map((result) => ToDo.fromMap(result)).toList();
-    
+
     return todos;
   }
 
@@ -25,6 +26,16 @@ class ToDoRepository {
   }
 
   Future<void> deleteRecord(ToDo task) async {
-  await database.rawDelete('DELETE FROM toDoList WHERE id = ?', [task.id]);
+    await database.rawDelete('DELETE FROM toDoList WHERE id = ?', [task.id]);
+  }
+
+  Future<void> updateTaskStatus(ToDo task) async {
+    Map<String, dynamic> mapToUpdate = task.toMap();
+    mapToUpdate['isDone'] = task.isDone == 1 ? 0 : 1; // Toggle the isDone value
+    await database
+        .update('toDoList', mapToUpdate, where: 'id = ?', whereArgs: [task.id]);
+     List<Map<String, dynamic>> results = await database
+        .rawQuery('SELECT * FROM toDoList ORDER BY createdAt DESC');
+    print(results);
   }
 }

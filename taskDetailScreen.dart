@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'todo.dart';
+import 'todo_repository.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final ToDo toDo;
+  final ToDoRepository todoRepository;
 
-  TaskDetailScreen({required this.toDo});
+  TaskDetailScreen({required this.toDo, required this.todoRepository});
 
   @override
   Widget build(BuildContext context) {
@@ -13,27 +15,16 @@ class TaskDetailScreen extends StatelessWidget {
         title: Text(toDo.name),
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'edit') {
-                // Handle Edit action
-                _editTask(context);
-              } else if (value == 'delete') {
-                // Handle Delete action
-                _deleteTask(context);
-              } else if (value == 'toggle') {
-                // Handle Toggle action
-                _toggleTask(context);
-              }
-            },
+            onSelected: (value) => _handlePopupSelection(value, context),
             itemBuilder: (BuildContext context) {
-              return ['Edit', 'Delete', 'Toggle status'].map((String choice) {
+              return ['toggle'].map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice.toLowerCase(),
                   child: Text(choice),
                 );
               }).toList();
             },
-          ),
+          )
         ],
       ),
       body: Padding(
@@ -43,7 +34,7 @@ class TaskDetailScreen extends StatelessWidget {
           children: [
             Text(
               'Description:',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headline6,
             ),
             SizedBox(height: 8),
             Text(toDo.description),
@@ -53,16 +44,27 @@ class TaskDetailScreen extends StatelessWidget {
     );
   }
 
-  // Implement functions for Edit, Delete, and Toggle actions
-  void _editTask(BuildContext context) {
-    // Implement the logic to navigate to the edit screen
+  void _handlePopupSelection(String value, BuildContext context) {
+    if (value == 'toggle') {
+      for (var i = 0; i < 2; i++) {
+        _toggleTask(context);
+      }
+      // temporary solution to bug
+    /// Currently there is bug here that correctly changes the status of the task after running the updateTaskStatus twice.
+    /// This is especially visible when going between ListView and DetailView but i lack the knowledge to solve the issue.
+    /// How to reproduce:
+    /// 1. Be in ListView
+    /// 2. Click the task
+    /// 3. Toggle task status
+    /// 4. Go back to ListView
+    /// 5. Refresh - Task wont change the status
+    /// 6. repeat the 2 and 3 and again 3
+    /// 7. Refresh - now the task should change status
+    }
   }
 
-  void _deleteTask(BuildContext context) {
-    // Implement the logic to delete the task
-  }
-
-  void _toggleTask(BuildContext context) {
-    // Implement the logic to toggle the task's status
+  Future<void> _toggleTask(BuildContext context) async {
+    toDo.isDone = toDo.isDone == 1 ? 0 : 1;
+      await todoRepository.updateTaskStatus(toDo);
   }
 }

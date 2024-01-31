@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'todo.dart';
 import 'todo_list_item.dart';
 import 'todo_repository.dart';
 import 'add_task_screen.dart';
+import 'initial_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final ToDoRepository todoRepository;
@@ -26,38 +28,24 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _loadToDos() async {
-  List<ToDo> todos = await widget.todoRepository.getAllToDos();
-  todos.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-  setState(() {
-    _todos = todos;
-  });
-}
+    List<ToDo> todos = await widget.todoRepository.getAllToDos();
+    todos.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    setState(() {
+      _todos = todos;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List'),
+        title: Text('Welcome ${widget.username}!'),
         actions: [
-          DropdownButton<String>(
+          IconButton(
             icon: Icon(Icons.more_vert),
-            onChanged: (String? value) {
-              if (value == 'add') {
-                _handleAddTask(context);
-              } else if (value == 'deleteAll') {
-                _handleDeleteAllTasks();
-              }
+            onPressed: () {
+              _showPopupMenu(context);
             },
-            items: [
-              DropdownMenuItem<String>(
-                value: 'add',
-                child: Text('Add New Task'),
-              ),
-              DropdownMenuItem<String>(
-                value: 'deleteAll',
-                child: Text('Delete All Tasks'),
-              ),
-            ],
           ),
         ],
       ),
@@ -69,6 +57,8 @@ class _MainScreenState extends State<MainScreen> {
             onLongPress: () {
               _showTaskOptions(context, _todos[index]);
             },
+            todoRepository:
+                widget.todoRepository, // Pass todoRepository to ToDoListItem
           );
         },
       ),
@@ -82,11 +72,49 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _showPopupMenu(BuildContext context) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        overlay.size.width - 48.0, // Adjust the values as needed
+        kToolbarHeight, // Distance from the top
+        overlay.size.width,
+        0.0,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'refresh',
+          child: Text('Refresh'),
+        ),
+        PopupMenuItem<String>(
+          value: 'deleteAll',
+          child: Text('Delete All Tasks'),
+        ),
+        PopupMenuItem<String>(
+          value: 'purgeUsername',
+          child: Text('Clear Shared Preferences Username'),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'refresh') {
+              _handleRefresh();
+            } else if (value == 'deleteAll') {
+              _handleDeleteAllTasks();
+            } else if (value == 'purgeUsername') {
+              _handlePurgeUsername();
+            }
+          });
+  }
+
   void _handleAddTask(BuildContext context) async {
     // Await the result when navigating to AddTaskScreen
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddTaskScreen(todoRepository: widget.todoRepository),
+        builder: (context) =>
+            AddTaskScreen(todoRepository: widget.todoRepository),
       ),
     );
 
@@ -109,14 +137,6 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit Task'),
-              onTap: () {
-                Navigator.pop(context); // Close the bottom sheet
-                _editTask(toDo);
-              },
-            ),
-            ListTile(
               leading: Icon(Icons.delete),
               title: Text('Delete Task'),
               onTap: () {
@@ -130,12 +150,16 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _editTask(ToDo toDo) {
-    // Implement the edit task logic
+  void _handleRefresh() {
+    _loadToDos();
+  }
+  void _handleDeleteTask(ToDo task) {
+    widget.todoRepository.deleteRecord(task);
+    _loadToDos();
   }
 
-  void _handleDeleteTask(ToDo task) {
-  widget.todoRepository.deleteRecord(task);
-  _loadToDos();
+  void _handlePurgeUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
   }
 }

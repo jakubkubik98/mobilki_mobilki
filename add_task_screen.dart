@@ -50,7 +50,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _titleController.clear();
     _descriptionController.clear();
     Map<String, dynamic> toDoMap = newToDo.toMap();
-    await widget.todoRepository.addNewToDo(newToDo); // Insert the new task into the database
+    await widget.todoRepository
+        .addNewToDo(newToDo); // Insert the new task into the database
     Navigator.of(context).pop(true); // Close the screen
   }
 

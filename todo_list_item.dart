@@ -13,7 +13,8 @@ class ToDoListItem extends StatelessWidget {
 
   final ToDo toDo;
   final VoidCallback? _onLongPress;
-  final ToDoRepository todoRepository; // Add todoRepository as a member variable
+  final ToDoRepository
+      todoRepository; // Add todoRepository as a member variable
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,8 @@ class ToDoListItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => TaskDetailScreen(
               toDo: toDo,
-              todoRepository: todoRepository, // Pass todoRepository when creating TaskDetailScreen
+              todoRepository:
+                  todoRepository, // Pass todoRepository when creating TaskDetailScreen
             ),
           ),
         );
@@ -55,7 +57,10 @@ class ToDoListItem extends StatelessWidget {
     } else {
       return Text(
         toDo.name,
-        style: Theme.of(context).textTheme.headlineSmall?.merge(TextStyle(decoration: TextDecoration.lineThrough)),
+        style: Theme.of(context)
+            .textTheme
+            .headlineSmall
+            ?.merge(TextStyle(decoration: TextDecoration.lineThrough)),
       );
     }
   }
@@ -63,7 +68,8 @@ class ToDoListItem extends StatelessWidget {
   Widget _descriptionRow(BuildContext context) {
     int maxLength = 10;
     if (toDo.description.length > maxLength) {
-      String trimmedDesc = toDo.description.replaceRange(maxLength + 1, null, "...");
+      String trimmedDesc =
+          toDo.description.replaceRange(maxLength + 1, null, "...");
       return Text(
         trimmedDesc,
         style: Theme.of(context).textTheme.bodyMedium,
@@ -77,7 +83,9 @@ class ToDoListItem extends StatelessWidget {
   }
 
   Widget _createdRow(BuildContext context) {
-    var formattedDate = DateFormat("EEE, d MMM yyyy 'at' HH:mm").format(DateTime.fromMillisecondsSinceEpoch(toDo.createdAt));
-    return Text("Created at: " + formattedDate, style: Theme.of(context).textTheme.bodySmall);
+    var formattedDate = DateFormat("EEE, d MMM yyyy 'at' HH:mm")
+        .format(DateTime.fromMillisecondsSinceEpoch(toDo.createdAt));
+    return Text("Created at: " + formattedDate,
+        style: Theme.of(context).textTheme.bodySmall);
   }
 }

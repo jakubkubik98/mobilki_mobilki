@@ -34,7 +34,7 @@ class ToDoRepository {
     mapToUpdate['isDone'] = task.isDone == 1 ? 0 : 1; // Toggle the isDone value
     await database
         .update('toDoList', mapToUpdate, where: 'id = ?', whereArgs: [task.id]);
-     List<Map<String, dynamic>> results = await database
+    List<Map<String, dynamic>> results = await database
         .rawQuery('SELECT * FROM toDoList ORDER BY createdAt DESC');
     print(results);
   }

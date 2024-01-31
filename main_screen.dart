@@ -100,13 +100,13 @@ class _MainScreenState extends State<MainScreen> {
       ],
     ).then((value) {
       if (value == 'refresh') {
-              _handleRefresh();
-            } else if (value == 'deleteAll') {
-              _handleDeleteAllTasks();
-            } else if (value == 'purgeUsername') {
-              _handlePurgeUsername();
-            }
-          });
+        _handleRefresh();
+      } else if (value == 'deleteAll') {
+        _handleDeleteAllTasks();
+      } else if (value == 'purgeUsername') {
+        _handlePurgeUsername();
+      }
+    });
   }
 
   void _handleAddTask(BuildContext context) async {
@@ -153,6 +153,7 @@ class _MainScreenState extends State<MainScreen> {
   void _handleRefresh() {
     _loadToDos();
   }
+
   void _handleDeleteTask(ToDo task) {
     widget.todoRepository.deleteRecord(task);
     _loadToDos();

@@ -39,7 +39,8 @@ class _InitialScreenState extends State<InitialScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) {
-            return MainScreen(todoRepository: widget.todoRepository, username: savedUsername);
+            return MainScreen(
+                todoRepository: widget.todoRepository, username: savedUsername);
           },
         ),
       );
@@ -61,7 +62,8 @@ class _InitialScreenState extends State<InitialScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) {
-            return MainScreen(todoRepository: widget.todoRepository, username: _textInput);
+            return MainScreen(
+                todoRepository: widget.todoRepository, username: _textInput);
           },
         ),
       );
@@ -81,7 +83,8 @@ class _InitialScreenState extends State<InitialScreen> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Please input your name",
-                errorText: _isValid ? null : "Name must be at least 3 characters long",
+                errorText:
+                    _isValid ? null : "Name must be at least 3 characters long",
               ),
             ),
           ),

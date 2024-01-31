@@ -43,7 +43,8 @@ class ToDo {
 
     return map;
   }
-   ToDo copyWith({
+
+  ToDo copyWith({
     String? name,
     String? description,
     int? createdAt,
